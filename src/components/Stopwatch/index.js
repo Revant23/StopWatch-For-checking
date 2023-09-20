@@ -12,22 +12,35 @@ const intialState = {
 class Stopwatch extends Component {
   state = intialState
 
+  clearTimerInterval = () => clearInterval(this.TimerId)
+
   StopWatchStarted = () => {
-    this.Timer = setInterval(this.incrementInSeconds, 1000)
+    this.TimerId = setInterval(this.incrementInTime, 1000)
   }
 
-  incrementInSeconds = () => () => {
-    this.setState(prevState => ({
-      timeCompletedInSec: prevState.timeCompletedInSec + 1,
-    }))
+  incrementInTime = () => {
+    const {timeCompletedInSec, timeCompletedInMin} = this.state
+
+    if (timeCompletedInSec < 59) {
+      this.setState(prevState => ({
+        timeCompletedInSec: prevState.timeCompletedInSec + 1,
+      }))
+    } else {
+      this.setState(prevState => ({
+        timeCompletedInMin: prevState.timeCompletedInMin + 1,
+      }))
+
+      this.setState({timeCompletedInSec: 0})
+    }
   }
 
   StopWatchPaused = () => {
-    console.log('pause')
+    this.clearTimerInterval()
   }
 
   StopWatchReset = () => {
-    console.log('Reset')
+    this.clearTimerInterval()
+    this.setState(intialState)
   }
 
   timerUpdater = () => {
@@ -39,46 +52,50 @@ class Stopwatch extends Component {
     const timerSec =
       timeCompletedInSec > 9 ? timeCompletedInSec : `0${timeCompletedInSec}`
 
-    return `${timerMin} : ${timerSec}`
+    return `${timerMin}:${timerSec}`
   }
 
   render() {
     return (
       <div className="app-container">
-        <h1>Stopwatch</h1>
-        <div className="timer-container">
-          <div className="head-container">
-            <img
-              className="timer-image"
-              src="https://assets.ccbp.in/frontend/react-js/stopwatch-timer.png"
-              alt="stopwatch"
-            />
-            <h1 className="timer">Timer</h1>
+        <h1 className="main-heading">Stopwatch</h1>
+        <div className="main-container">
+          <div className="timer-container">
+            <div className="head-container">
+              <img
+                className="timer-image"
+                src="https://assets.ccbp.in/frontend/react-js/stopwatch-timer.png"
+                alt="stopwatch"
+              />
+              <h1 className="timer">Timer</h1>
+            </div>
+            <div className="CompletedTime">
+              <h1 className="timer-clock">{this.timerUpdater()} </h1>
+            </div>
           </div>
-          <div className="CompletedTime">
-            <h1>{this.timerUpdater()}</h1>
+          <div className="btn-container">
+            <button
+              onClick={this.StopWatchStarted}
+              className="startBtn"
+              type="button"
+            >
+              Start
+            </button>
+            <button
+              onClick={this.StopWatchPaused}
+              className="stopBtn"
+              type="button"
+            >
+              Stop
+            </button>
+            <button
+              onClick={this.StopWatchReset}
+              className="resetBtn"
+              type="button"
+            >
+              Reset
+            </button>
           </div>
-          <button
-            onClick={this.StopWatchStarted}
-            className="startBtn"
-            type="button"
-          >
-            Start
-          </button>
-          <button
-            onClick={this.StopWatchPaused}
-            className="stopBtn"
-            type="button"
-          >
-            Stop
-          </button>
-          <button
-            onClick={this.StopWatchReset}
-            className="resetBtn"
-            type="button"
-          >
-            Reset
-          </button>
         </div>
       </div>
     )
